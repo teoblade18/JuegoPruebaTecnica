@@ -1,0 +1,6 @@
+@JuegoPruebaTecnica_HostAddress = http://localhost:5160
+
+GET {{JuegoPruebaTecnica_HostAddress}}/weatherforecast/
+Accept: application/json
+
+###

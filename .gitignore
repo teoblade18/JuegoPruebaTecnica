@@ -1,0 +1,7 @@
+﻿################################################################################
+# Este archivo .gitignore ha sido creado automáticamente por Microsoft(R) Visual Studio.
+################################################################################
+
+/JuegoPruebaTecnica/bin/Debug/net8.0
+/.vs/JuegoPruebaTecnica
+/JuegoPruebaTecnica/obj
