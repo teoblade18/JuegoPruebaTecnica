@@ -1,11 +1,12 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.Text.Json.Serialization;
 
 namespace JuegoPruebaTecnica.Models;
 
 public partial class Movimiento
 {
-    public int IdMovimiento { get; set; }
+    public int? IdMovimiento { get; set; }
 
     public string Descripcion { get; set; } = null!;
 
@@ -15,7 +16,11 @@ public partial class Movimiento
 
     public int IdPartida { get; set; }
 
-    public virtual Jugador IdJugadorNavigation { get; set; } = null!;
+    [JsonIgnoreAttribute]
+    public virtual Jugador? IdJugadorNavigation { get; set; } = null!;
 
-    public virtual Partida IdPartidaNavigation { get; set; } = null!;
+    [JsonIgnoreAttribute]
+    public virtual Partida? IdPartidaNavigation { get; set; } = null!;
+
+    public string? Estado { get; set; }
 }

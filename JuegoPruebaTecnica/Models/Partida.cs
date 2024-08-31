@@ -1,5 +1,6 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.Text.Json.Serialization;
 
 namespace JuegoPruebaTecnica.Models;
 
@@ -11,5 +12,6 @@ public partial class Partida
 
     public virtual Jugador? IdGanadorNavigation { get; set; }
 
-    public virtual ICollection<Movimiento> Movimientos { get; set; } = new List<Movimiento>();
+    [JsonIgnoreAttribute]
+    public virtual ICollection<Movimiento>? Movimientos { get; set; } = new List<Movimiento>();
 }

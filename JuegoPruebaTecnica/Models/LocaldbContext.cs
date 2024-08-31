@@ -44,6 +44,8 @@ public partial class LocaldbContext : DbContext
 
             entity.Property(e => e.Descripcion).HasMaxLength(255);
 
+            entity.Property(e => e.Estado).HasMaxLength(20);
+
             entity.HasOne(d => d.IdJugadorNavigation).WithMany(p => p.Movimientos)
                 .HasForeignKey(d => d.IdJugador)
                 .OnDelete(DeleteBehavior.ClientSetNull)
@@ -58,6 +60,8 @@ public partial class LocaldbContext : DbContext
         modelBuilder.Entity<Partida>(entity =>
         {
             entity.HasKey(e => e.IdPartida).HasName("PK__Partida__6ED660C70B4423B7");
+
+            entity.ToTable("Partida");
 
             entity.HasOne(d => d.IdGanadorNavigation).WithMany(p => p.Partidas)
                 .HasForeignKey(d => d.IdGanador)

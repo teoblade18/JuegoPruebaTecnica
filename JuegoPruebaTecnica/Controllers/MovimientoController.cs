@@ -3,8 +3,6 @@ using Microsoft.AspNetCore.Mvc;
 
 namespace JuegoPruebaTecnica.Controllers
 {
-    [Route("api/[controller]")]
-    [ApiController]
     public class MovimientoController : ControllerBase
     {
         private readonly LocaldbContext _context;
@@ -14,8 +12,6 @@ namespace JuegoPruebaTecnica.Controllers
             _context = context;
         }
 
-        // POST: api/Movimiento
-        [HttpPost]
         public async Task<ActionResult<Movimiento>> RegistrarMovimiento([FromBody] Movimiento movimiento)
         {
             if (movimiento == null || string.IsNullOrWhiteSpace(movimiento.Descripcion))
@@ -41,8 +37,6 @@ namespace JuegoPruebaTecnica.Controllers
             return CreatedAtAction(nameof(GetMovimiento), new { id = movimiento.IdMovimiento }, movimiento);
         }
 
-        // GET: api/Movimiento/5
-        [HttpGet("{id}")]
         public async Task<ActionResult<Movimiento>> GetMovimiento(int id)
         {
             var movimiento = await _context.Movimientos.FindAsync(id);

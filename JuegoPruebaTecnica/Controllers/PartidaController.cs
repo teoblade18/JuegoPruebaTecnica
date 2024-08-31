@@ -28,25 +28,29 @@ namespace JuegoPruebaTecnica.Services
                 throw new Exception("Partida no encontrada.");
             }
 
+            movimiento.Gano = false;
+            movimiento.Estado = "Abierto";
             _context.Movimientos.Add(movimiento);
             await _context.SaveChangesAsync();
 
-            return DeterminarResultado(movimiento.IdPartida, movimiento);
+            return DeterminarResultado(movimiento.IdPartida);
         }
 
-        private string DeterminarResultado(int idPartida, Movimiento movimiento)
+        private string DeterminarResultado(int idPartida)
         {
-            var partida = _context.Partidas.Find(idPartida);
-            var movimientos = partida.Movimientos.ToList();
+            var movimientos = _context.Movimientos.Where(p => p.IdPartida == idPartida && p.Estado == "Abierto").ToList();
 
-            if (movimientos.Count < 2)
+            if (movimientos.Count() < 2)
             {
                 // Esperar a que ambos jugadores hagan sus movimientos
                 return "Esperando el movimiento del otro jugador.";
             }
 
-            var movimientoJugador1 = movimientos.FirstOrDefault(m => m.IdJugador == movimientos[0].IdJugador);
-            var movimientoJugador2 = movimientos.FirstOrDefault(m => m.IdJugador != movimientos[0].IdJugador);
+            var movimientoJugador1 = movimientos.First();
+            var movimientoJugador2 = movimientos.Last();
+
+            Jugador jugador1 = _context.Jugadores.Where(i => i.IdJugador == movimientoJugador1.IdJugador).First();
+            Jugador jugador2 = _context.Jugadores.Where(i => i.IdJugador == movimientoJugador2.IdJugador).First();
 
             if (movimientoJugador1 == null || movimientoJugador2 == null)
             {
@@ -58,17 +62,25 @@ namespace JuegoPruebaTecnica.Services
             if (resultado == 1)
             {
                 movimientoJugador1.Gano = true;
+                movimientoJugador1.Estado = "Cerrado";
+                movimientoJugador2.Estado = "Cerrado";
                 _context.SaveChanges();
-                return $"El jugador 1 gana esta ronda con {movimientoJugador1.Descripcion}.";
+                return $"{jugador1.Nombre} gana esta ronda con {movimientoJugador1.Descripcion}.";
             }
             else if (resultado == -1)
             {
                 movimientoJugador2.Gano = true;
+                movimientoJugador1.Estado = "Cerrado";
+                movimientoJugador2.Estado = "Cerrado";
                 _context.SaveChanges();
-                return $"El jugador 2 gana esta ronda con {movimientoJugador2.Descripcion}.";
+                return $"{jugador2.Nombre} gana esta ronda con {movimientoJugador2.Descripcion}.";
             }
             else
             {
+                movimientoJugador1.Estado = "Cerrado";
+                movimientoJugador2.Estado = "Cerrado";
+                _context.SaveChanges();
+
                 return "Empate en esta ronda.";
             }
         }
@@ -90,22 +102,21 @@ namespace JuegoPruebaTecnica.Services
 
         public async Task<string> VerificarGanador(int idPartida)
         {
-            var partida = await _context.Partidas.FindAsync(idPartida);
-            if (partida == null)
-            {
-                throw new Exception("Partida no encontrada.");
-            }
 
-            var ganador = partida.Movimientos.GroupBy(m => m.IdJugador)
+            var idGanador = _context.Movimientos.GroupBy(m => m.IdJugador)
                                              .Where(g => g.Count(m => m.Gano) >= 3)
                                              .Select(g => g.Key)
                                              .FirstOrDefault();
 
-            if (ganador != 0)
+            var ganador = _context.Jugadores.Find(idGanador);
+
+            if (ganador != null)
             {
-                partida.IdGanador = ganador;
+                var partida = _context.Partidas.Find(idPartida);
+                partida.IdGanador = ganador.IdJugador;
                 await _context.SaveChangesAsync();
-                return $"El jugador {ganador} ha ganado la partida!";
+
+                return $"El jugador {ganador.Nombre} ha ganado la partida!";
             }
 
             return "Aún no hay un ganador. Continúa jugando.";
