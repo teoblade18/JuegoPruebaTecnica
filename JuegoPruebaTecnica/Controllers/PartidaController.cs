@@ -103,7 +103,9 @@ namespace JuegoPruebaTecnica.Services
         public async Task<string> VerificarGanador(int idPartida)
         {
 
-            var idGanador = _context.Movimientos.GroupBy(m => m.IdJugador)
+            var idGanador = _context.Movimientos
+                                             .Where(i => i.IdPartida == idPartida)
+                                             .GroupBy(m => m.IdJugador)
                                              .Where(g => g.Count(m => m.Gano) >= 3)
                                              .Select(g => g.Key)
                                              .FirstOrDefault();
