@@ -1,18 +1,24 @@
+using JuegoPruebaTecnica.Controllers;
 using JuegoPruebaTecnica.Models;
+using JuegoPruebaTecnica.Services;
 using Microsoft.EntityFrameworkCore;
 
 var builder = WebApplication.CreateBuilder(args);
 
+// Configuración de la base de datos
 builder.Services.AddDbContext<LocaldbContext>(options =>
     options.UseSqlServer(builder.Configuration.GetConnectionString("DefaultConnection")));
 
-// Add services to the container.
+// Registro de controladores como servicios
+builder.Services.AddScoped<PartidaController>();
+builder.Services.AddScoped<JugadorController>();
 
+// Configurar servicios adicionales
 builder.Services.AddControllers();
-// Learn more about configuring Swagger/OpenAPI at https://aka.ms/aspnetcore/swashbuckle
 builder.Services.AddEndpointsApiExplorer();
 builder.Services.AddSwaggerGen();
 
+// Configurar CORS
 builder.Services.AddCors(options =>
 {
     options.AddPolicy("ReglasCors",
@@ -23,11 +29,11 @@ builder.Services.AddCors(options =>
 
 var app = builder.Build();
 
-//Configure the HTTP request pipeline.
+// Configuración del middleware para desarrollo
 //if (app.Environment.IsDevelopment())
 //{
 //    app.UseSwagger();
-//app.UseSwaggerUI();
+//    app.UseSwaggerUI();
 //}
 
 app.UseSwagger();
@@ -38,11 +44,7 @@ app.UseSwaggerUI(options =>
 });
 
 app.UseHttpsRedirection();
-
 app.UseCors("ReglasCors");
-
 app.UseAuthorization();
-
 app.MapControllers();
-
 app.Run();
